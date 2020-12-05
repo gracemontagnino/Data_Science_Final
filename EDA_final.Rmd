@@ -1,0 +1,72 @@
+---
+title: "Final Project EDA Notebook"
+output: html_notebook
+---
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(broom)
+```
+
+
+```{r}
+kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
+kids
+```
+list of vars: 
+addCC
+CTC -- Child Tax Credit
+edservs -- Public spending on education special services by state and year, in $1,000s.
+edsubs -- Public spending on education subsidies, including tuition and scholarships, by state and year, in $1,000s.
+fedEITC
+fedSSI
+HCD -- housing and community developments
+HeadStartPriv
+highered -- higher education expenditures
+lib -- libraries
+Medicaid_CHIP
+other_health
+othercashserv
+parkrec -- parks and rec
+pell -- pell grant
+PK12ed -- K12 expenditures
+pubhealth
+SNAP
+socsec -- Public spending on Social Security payments that go to children by state and year, in $1,000s
+stateEITC
+TANFbasic
+unemp -- unemployment
+wcomp -- workers comp
+```{r}
+kids %>%
+  group_by(state, variable) %>%
+  filter(variable == c("highered","HeadStartPriv", "PK12ed", "SNAP", "HCD", "socsec")) %>%
+  summarize(spent_pc = sum(inf_adj_perchild)) %>%
+  ggplot() +
+  geom_col(aes(state, spent_pc, fill = variable), position = "stack") +
+  theme(axis.text.x = element_text(angle = 90)) +
+  ggtitle("Money spent by each state per category")
+ 
+
+```
+```{r}
+kids %>%
+filter(state == "Texas" | state == "Delaware" | state == "Hawaii" | state == "Alaska") %>%
+ggplot(aes(year, inf_adj_perchild, color = variable)) +
+geom_line() +
+facet_grid(cols = vars(state)) +
+ggtitle("Money spent over time in each category") +
+theme(axis.text.x = element_text(angle = 90)) 
+  
+```
+```{r}
+kids %>%
+  group_by(variable) %>%
+  summarize(sum = sum(inf_adj_perchild)) %>%
+  ggplot(aes(variable, sum)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90)) + 
+  ggtitle("Total spent in US on kids in each category")
+```
+
