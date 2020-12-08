@@ -7,6 +7,9 @@ output: html_notebook
 library(dplyr)
 library(tidyverse)
 library(broom)
+library(readxl)
+library(modelr)
+library(rsample)
 ```
 
 
@@ -68,5 +71,54 @@ kids %>%
   geom_col() +
   theme(axis.text.x = element_text(angle = 90)) + 
   ggtitle("Total spent in US on kids in each category")
+```
+```{r}
+df_income <- read_csv('https://raw.githubusercontent.com/rbyirdaw/US-median-household-income/master/median-household-income-by-state-master.csv')
+df_income <-
+  df_income %>%
+  select("year", "state", "median income")
+
+df_combo <- 
+  df_income %>%
+  left_join(kids, by = c("year","state")) %>%
+  select("year", "state", "median income", "inf_adj_perchild", "variable") %>%
+  filter (state!= "United States")
+
+df_combo
+names(df_combo)[names(df_combo) == "median income"] <- "median_income"
+```
+```{r}
+df_combo %>%
+  group_by(state) %>%
+  filter(variable == "PK12ed") %>%
+  ggplot(aes(x = median_income, y = inf_adj_perchild, color = state)) +
+  geom_point()
+```
+```{r}
+df_combo %>%
+  filter(year == "2014") %>%
+  select("state", "median_income", "inf_adj_perchild", "variable") %>%
+  group_by(state) %>%
+  summarize(sum = sum(inf_adj_perchild), income = mean(median_income)) %>%
+  ggplot(aes(sum, income, color = state)) +
+  geom_point() +
+  ggtitle("Total money spent in 2014 on children in comparison to income median that year")
+```
+
+```{r}
+combined_money <-
+  df_combo %>%
+  pivot_longer(names_to = "money_type",
+               values_to = "amount",
+               cols = c(median_income, inf_adj_perchild)) 
+```
+```{r}
+df_combo %>%
+  ggplot(aes(state, median_income)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90)) 
+```
+```{r}
+
 ```
 
