@@ -11,7 +11,7 @@ library(readxl)
 library(modelr)
 library(rsample)
 ```
-
+NOTE: inf_adj_perchild is in $1000.
 
 ```{r}
 kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
@@ -119,6 +119,121 @@ df_combo %>%
   theme(axis.text.x = element_text(angle = 90)) 
 ```
 ```{r}
+library(usmap)
+library(ggplot2)
+map_df <-
+kids %>%
+  group_by(variable) %>%
+  filter(year == "2014") %>%
+  summarize(sum = sum(inf_adj_perchild), state = state)
+map_df_2013 <-
+ kids %>%
+  group_by(variable) %>%
+  filter(year == "2013") %>%
+  summarize(sum = sum(inf_adj_perchild), state = state) 
+```
+```{r}
+expen_df <- read_csv('2014_asfin_state_totals.csv')
+expen_df <- data.frame(lapply(expen_df, as.character), stringsAsFactors=FALSE)
+
+expen_df_2013<-read_csv('2013_asfin_state_totals.csv')
+expen_df_2013 <-data.frame(lapply(expen_df_2013, as.character), stringsAsFactors = FALSE)
+
+expen_df <-
+  expen_df %>%
+  rename(
+    "New Hampshire" = New.Hampshire,
+    "New Jersey" = New.Jersey,
+    "New York" = New.York,
+    "New Mexico" = New.Mexico,
+    "North Dakota" = North.Dakota,
+    "North Carolina" = North.Carolina,
+    "Rhode Island" = Rhode.Island,
+    "South Carolina" = South.Carolina,
+    "South Dakota" = South.Dakota,
+    "West Virginia" = West.Virginia
+  )
+  
+expen_df
+
+
+expen_df_2013 <-
+  expen_df_2013 %>%
+  rename(
+    "New Hampshire" = New.Hampshire,
+    "New Jersey" = New.Jersey,
+    "New York" = New.York,
+    "New Mexico" = New.Mexico,
+    "North Dakota" = North.Dakota,
+    "North Carolina" = North.Carolina,
+    "Rhode Island" = Rhode.Island,
+    "South Carolina" = South.Carolina,
+    "South Dakota" = South.Dakota,
+    "West Virginia" = West.Virginia
+  )
 
 ```
+```{r}
+expen_df <-
+  expen_df %>%
+  pivot_longer(
+    names_to = "state",
+    cols = everything(),
+    values_to = "Total_Expenditures"
+  ) %>%
+  slice(-c(1)) %>%
+  left_join(map_df, by = c("state")) %>%
+  group_by(state)%>%
+  summarize(total = sum(sum), state=state, Total_Expenditures_2014=Total_Expenditures) 
+expen_df$Total_Expenditures_2014 <- as.numeric(expen_df$Total_Expenditures_2014)
+expen_df <-
+  expen_df %>%
+  mutate(norm=(total/Total_Expenditures_2014)) 
+expen_df
+
+
+expen_df_2013 <-
+  expen_df_2013 %>%
+  pivot_longer(
+    names_to = "state",
+    cols = everything(),
+    values_to = "Total_Expenditures"
+  ) %>%
+  slice(-c(1)) %>%
+  left_join(map_df_2013, by = c("state")) %>%
+  group_by(state)%>%
+  summarize(total_2013 = sum(sum), state=state, Total_Expenditures_2013=Total_Expenditures) 
+expen_df_2013$Total_Expenditures_2013 <- as.numeric(expen_df_2013$Total_Expenditures_2013)
+expen_df_2013 <-
+  expen_df_2013 %>%
+  mutate(norm_2013=(total_2013/Total_Expenditures_2013)) 
+expen_df_2013
+```
+
+
+```{r}
+plot_usmap(data = expen_df, values = "norm", color = "red") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Normalized Money Spent on Each", label = scales::comma
+  ) + theme(legend.position = "right") + 
+  ggtitle("Money Spent per child as a Percentage of Total Expenditures in 2014")
+
+
+plot_usmap(data = expen_df_2013, values = "norm_2013", color = "red") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Normalized Money Spent on Each", label = scales::comma
+  ) + theme(legend.position = "right") + 
+  ggtitle("Money Spent per child as a Percentage of Total Expenditures in 2013")
+```
+```{r}
+plot_usmap(data = map_df, values = "sum", color = "red") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Money Spent per child in each state, unnormalized")
+plot_usmap(data = map_df_2013, values = "sum", color = "red") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Money Spent per child in each state, unnormalized")
+```
+
 
