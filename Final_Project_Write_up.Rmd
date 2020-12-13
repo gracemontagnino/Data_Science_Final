@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "Government Spending on Children"
 output: html_notebook
 ---
 
@@ -15,16 +15,18 @@ library(usmap)
 library(ggplot2)
 ```
 
-```{r}
-#load in datasets
+```{r load-data}
+# load in datasets
 kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
 df_income <- read_csv('https://raw.githubusercontent.com/rbyirdaw/US-median-household-income/master/median-household-income-by-state-master.csv')
 ```
 
 **General Background:**
-what is question
+Our central questions were:
+* How does state spending on kids vary state to state and over time?
+* Does government spending in money relate to the economic wellbeing of these states, measured in median income?
 
-To answer these questions, we utilized two datasets: one that details how each state has spent money on kids over time, and another that documents median household income in each state overtime. The dataset with information about spending on kids was formulated in a collaboration between a Brown University and Urban Institute Russell Sage Foundation Grant, and a Eunice Kennedy Shriver National Institute of Child Health and Human Development of the National Institutes of Health grant to isolate the gaps in class and public spending on child development. The dataset includes the year, state, raw amount spent on children (raw), inflation adjusted amount spent on children (inf_adj), and inflation adjusted amount spent per child (inf_adj_perchild), as well as a variable (named variable) indicating where the money specifically was spent. The variable options are: addCC, CTC, edservs, edsubs, fedEITC, fedSSI, HCD, HeadStartPriv, highered, lib, Medicaid_CHIP, other_health, othercashserv, parkrec, pell, PK12ed, pubhealth, SNAP, socsec, stateEITC, TANFbasic, unemp, wcomp. Because there are so many variables, we are not going to explain what each of those spending areas means, but they are all explained here: https://jrosen48.github.io/tidykids/articles/tidykids-codebook.html, and we will explain the variables we are noting the effects of, most of these are exactly what the names sound like! The second dataset held household median income in each state from 1984-2014.
+To answer these questions, we utilized two datasets: one that details how each state has spent money on kids over time, and another that documents median household income in each state overtime. The dataset with information about spending on kids was formulated in a collaboration between a Brown University and Urban Institute Russell Sage Foundation Grant, and a Eunice Kennedy Shriver National Institute of Child Health and Human Development of the National Institutes of Health grant to isolate the gaps in class and public spending on child development. The dataset includes the year, state, raw amount spent on children (`raw`), inflation adjusted amount spent on children (`inf_adj`), and inflation adjusted amount spent per child (`inf_adj_perchild`), as well as a variable (named `variable`) indicating where the money specifically was spent. The variable options are: `addCC`, `CTC`, `edservs`, `edsubs`, `fedEITC`, `fedSSI`, `HCD`, `HeadStartPriv`, `highered`, `lib`, `Medicaid_CHIP`, `other_health`, `othercashserv`, `parkrec`, `pell`, `PK12ed`, `pubhealth`, `SNAP`, `socsec`, `stateEITC`, `TANFbasic`, `unemp`, `wcomp`. Because there are so many variables, we are not going to explain what each of those spending areas means, but they are all explained here: https://jrosen48.github.io/tidykids/articles/tidykids-codebook.html, and we will explain the variables we are noting the effects of, most of these are exactly what the names sound like! The second dataset held household median income in each state from 1984-2014.
 
 intro to first figure
 insert code for irst figure
@@ -35,13 +37,15 @@ The first question we had for our data was: How does state spending on kids vary
 
 To do this, we made a dataframe filtered for each year we were interested in, that dictated the totals spent in each state on children that year. Then we create a second data frame that filters the full kids dataset for that same specific year, and a spending category. We then join these two dataframes, and calculate the proportion of spending on part to whole with a simple ratio calculation. Below are our results for the variables we found most interesting.
 
-```{r}
+```{r k12-year-comps}
+# Filter total spending for 1998
 total_year_state_98 <-
 kids %>%
   group_by(state, year) %>%
   summarize(total = sum(inf_adj_perchild)) %>%
   filter(year == "1998")
 
+# Determine proportional spending for 1998
 prop_98<-
 kids %>%
   filter(variable == "PK12ed") %>%
@@ -50,18 +54,20 @@ kids %>%
   left_join(total_year_state_98, by = c("state", "year")) %>%
   mutate(prop = inf_adj_perchild/total)
 
+# Plot map for 1998
 p1<- plot_usmap(data = prop_98, values = "prop", color = "red") + 
   scale_fill_continuous(
     low = "white", high = "red", name = "Prop of Total Money Spent", label = scales::comma
   ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on K12ed in 1998")
 
-
+# Filter total spending for 2005
 total_year_state_05 <-
 kids %>%
   group_by(state, year) %>%
   summarize(total = sum(inf_adj_perchild)) %>%
   filter(year == "2005")
 
+# Determine proportional spending for 2005
 prop_05<-
 kids %>%
   filter(variable == "PK12ed") %>%
@@ -70,18 +76,20 @@ kids %>%
   left_join(total_year_state_05, by = c("state", "year")) %>%
   mutate(prop = inf_adj_perchild/total)
 
+# Plot map for 2005
 p2<- plot_usmap(data = prop_05, values = "prop", color = "red") + 
   scale_fill_continuous(
     low = "white", high = "red", name = "Prop of Total Money Spent", label = scales::comma
   ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on K12ed in 2005")
 
-
+# Filter total spending for 2012
 total_year_state_12 <-
 kids %>%
   group_by(state, year) %>%
   summarize(total = sum(inf_adj_perchild)) %>%
   filter(year == "2012")
 
+# Determine proportional spendng for 2012
 prop_12<-
 kids %>%
   filter(variable == "PK12ed") %>%
@@ -90,18 +98,20 @@ kids %>%
   left_join(total_year_state_12, by = c("state", "year")) %>%
   mutate(prop = inf_adj_perchild/total)
 
+# Plot map for 2012
 p3<-plot_usmap(data = prop_12, values = "prop", color = "red") + 
   scale_fill_continuous(
     low = "white", high = "red", name = "Prop of Total Money Spent", label = scales::comma
   ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on K12ed in 2012")
 
-
+# Filter total spending for 2016
 total_year_state_16 <-
 kids %>%
   group_by(state, year) %>%
   summarize(total = sum(inf_adj_perchild)) %>%
   filter(year == "2016")
 
+# Determine proportional spending for 2016
 prop_16<-
 kids %>%
   filter(variable == "PK12ed") %>%
@@ -110,6 +120,7 @@ kids %>%
   left_join(total_year_state_16, by = c("state", "year")) %>%
   mutate(prop = inf_adj_perchild/total)
 
+# Plot map for 2016
 p4<-plot_usmap(data = prop_16, values = "prop", color = "red") + 
   scale_fill_continuous(
     low = "white", high = "red", name = "Prop of Total Money Spent", label = scales::comma
@@ -118,7 +129,7 @@ p4<-plot_usmap(data = prop_16, values = "prop", color = "red") +
 
 grid.arrange(p1,p2,p3,p4, nrow=2, ncol =2) 
 ```
-Unfortunately, we were not surprised to see that generally, overtime spending on K12 education (K12ed) has decreased in priority for states. Comparing the 1998 map to the 2016 map, there is no doubt that the densities have lessened. This fits with the shrinking of national finance on public education that we have seen since 1998. Currently, when we talk about public school education, it is often riddled with pleads for improvement, but no is followed with little to no increase in resources. One surprising note here, was that there was a slight increase in density of proportional spending between 2012 and 2016. However, this is only in ~3 states. Because K12 education is by far the largest spending category in all states, we were discouraged to see that that had lost some resources over time because as the largest category it seems indicative of spending on children as a whole: a movement away from spending on our youth.
+Unfortunately, we were not surprised to see that generally, over time spending on K12 education (K12ed) has decreased in priority for states. Comparing the 1998 map to the 2016 map, there is no doubt that the densities have lessened. This fits with the shrinking of national finance on public education that we have seen since 1998. Currently, when we talk about public school education, it is often riddled with pleads for improvement, but no is followed with little to no increase in resources. One surprising note here, was that there was a slight increase in density of proportional spending between 2012 and 2016. However, this is only in ~3 states. Because K12 education is by far the largest spending category in all states, we were discouraged to see that that had lost some resources over time because as the largest category it seems indicative of spending on children as a whole: a movement away from spending on our youth.
 
 The next variable we will investigate is CTC, or the Child Tax Credit. CTC is a tax benefit given to medium to low income families with dependent children. With this, qualifying families are able to pay a bit less in taxes.
 ```{r}
@@ -295,7 +306,74 @@ We found these variable proportion comparisons particularly interesting because 
 
 While there are about 20 spending categories in total to explore, we found similar map progressions in all of them except for SNAP. Generally, they all show a decreased proportion in spending on that category, with the exception of a few outliers. SNAP was the only section to overtly break this pattern. Overall, in regards to the initial question, we saw that different states choose to spend their money quite differently when in regards to expenditures on children, but generally, overtime, there has been less and less spending on child related ventures.
 
-insert  model parts
+## Predicting Median Income through Spending
+
+Next, to understand the relationship between median income and spending on kids, we created a simple linear model based on all the spending categories to determine how well they can predict the median income. We split the data at the year 2010, as this is around when the impacts of the financial crisis of 2008 could be observed.
+
+```{r develop-model}
+kids_separated <-
+kids %>%
+  pivot_wider(
+    names_from = c("variable"),
+    names_sep = "_",
+    values_from = c("raw", "inf_adj", "inf_adj_perchild")
+  )
+
+df_combo <- 
+  df_income %>%
+  left_join(kids_separated, by = c("year","state")) %>%
+  filter(state!= "United States") %>%
+  rename(median_income = "median income") %>%
+  filter(year >= 1997)
+
+split_year <- 2010
+df_train = df_combo %>% filter(year <= split_year)
+df_validate = df_combo %>% filter(year > split_year & year <= 2014)
+
+fit_inf_adj_per_child <- 
+  df_train %>%
+  lm(formula = median_income ~ inf_adj_perchild_PK12ed + inf_adj_perchild_highered + inf_adj_perchild_edservs + inf_adj_perchild_pell + inf_adj_perchild_HeadStartPriv + inf_adj_perchild_TANFbasic + inf_adj_perchild_othercashserv + inf_adj_perchild_SNAP + inf_adj_perchild_socsec + inf_adj_perchild_fedEITC + inf_adj_perchild_pubhealth + inf_adj_perchild_HCD + inf_adj_perchild_lib + inf_adj_perchild_parkrec)
+
+fit_inf_adj_per_child %>% tidy(conf.int = TRUE)
+```
+
+Initially, we developed a linear model to predict median income based off the inflation-adjusted spending per child in all the  categories (excluding only those where many states did not allocate any money). This model has a few possibly redundant variables, though, which we could tell by looking at the confidence intervals for the coefficient estimates. Some of the variables, like `ed_servs`, `TANFbasic`, `SNAP`, and  `socsec`, have confidence intervals that include 0 as a possible value for the coefficient. This means that we cannot confidently say that these variables are predictors of median income. To confirm this, we constructed a leaner version of this model which excluded variables that might have no correlation to median income, which is shown below.
+
+The categories that we excluded are:
+* `ed_servs` - public spending on education special services
+* `TANFbasic` - public spending on TANF (Temporary Assistance for Needy Families) cash assistance payments
+* `SNAP` - public spending on SNAP (Supplemental Nutrition Assistance Program) benefit payments that go to children
+* `socsec` - public spending on Social Security payments that go to children
+
+Some of these categories may not correlate to median income because the median income is determined by the household wealth, and children don't contribute to the household wealth (because they're not working); so, for example, payments directly going to children may not directly correlate as much to median income.
+
+```{r leaner-model}
+fit_leaner <- 
+  df_train %>%
+  lm(formula = median_income ~ inf_adj_perchild_PK12ed + inf_adj_perchild_highered + inf_adj_perchild_pell + inf_adj_perchild_HeadStartPriv +  inf_adj_perchild_othercashserv + inf_adj_perchild_fedEITC + inf_adj_perchild_pubhealth + inf_adj_perchild_HCD + inf_adj_perchild_lib + inf_adj_perchild_parkrec)
+
+fit_leaner %>% tidy(conf.int = TRUE)
+```
+
+In our leaner model, we can make the following observations: 
+* Spending on K12 education is strongly positively correlated with median income.
+* We cannot confidently determine if spending on higher education is correlated with median income as the confidence interval for the confidence interval for the confidence interval includes 0.
+* Spending on Pell grants, Head Start, other cash assistance services, and EITC is negatively correlated with median income.
+* Spending on public health, HCD (housing and community development), libraries, and parks and recreation is positively correlated with median income.
+
+Interestingly, we observe that the large majority of cash assistance programs or other such social services are either not confidently correlated with median income or negatively correlated. We hypothesize that this might be because communities with lower median income are less likely to have the funds to dedicate to these services. In contrast, infrastructural services like public health, libraries, housing and community development, parks and recreation, and K12 education, all things that children directly benefit from and boost the social infrastructure of a community, are positively correlated with median income. We hypothesize that communities are able to devote more funds to these areas are either typically more affluent and are also investing back into their communities, which means that they may be more able to devote more funds to these areas.
+
+We also looked at the accuracy of each of these models to determine how much we could trust their results.
+
+```{r model-accuracy}
+rsquare(fit_inf_adj_per_child, df_train)
+rsquare(fit_inf_adj_per_child, df_validate)
+
+rsquare(fit_leaner, df_train)
+rsquare(fit_leaner, df_validate)
+```
+
+The model packed with more variables is 67% accurate for both the training and validation data. The leaner model is 65% accurate for the training data and 63% for the validation data, which is comparable to the fuller model. Both models have high accuracy given that median income is influenced by so many other conditions that are not captured in the data.
 
 **Conclusions and Further Questions**
 
