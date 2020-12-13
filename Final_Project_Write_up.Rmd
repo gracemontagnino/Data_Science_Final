@@ -1,0 +1,301 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(broom)
+library(readxl)
+library(modelr)
+library(rsample)
+library("gridExtra")
+library(usmap)
+library(ggplot2)
+```
+
+```{r}
+#load in datasets
+kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
+df_income <- read_csv('https://raw.githubusercontent.com/rbyirdaw/US-median-household-income/master/median-household-income-by-state-master.csv')
+```
+
+**General Background:**
+what is question
+
+To answer these questions, we utilized two datasets: one that details how each state has spent money on kids over time, and another that documents median household income in each state overtime. The dataset with information about spending on kids was formulated in a collaboration between a Brown University and Urban Institute Russell Sage Foundation Grant, and a Eunice Kennedy Shriver National Institute of Child Health and Human Development of the National Institutes of Health grant to isolate the gaps in class and public spending on child development. The dataset includes the year, state, raw amount spent on children (raw), inflation adjusted amount spent on children (inf_adj), and inflation adjusted amount spent per child (inf_adj_perchild), as well as a variable (named variable) indicating where the money specifically was spent. The variable options are: addCC, CTC, edservs, edsubs, fedEITC, fedSSI, HCD, HeadStartPriv, highered, lib, Medicaid_CHIP, other_health, othercashserv, parkrec, pell, PK12ed, pubhealth, SNAP, socsec, stateEITC, TANFbasic, unemp, wcomp. Because there are so many variables, we are not going to explain what each of those spending areas means, but they are all explained here: https://jrosen48.github.io/tidykids/articles/tidykids-codebook.html, and we will explain the variables we are noting the effects of, most of these are exactly what the names sound like! The second dataset held household median income in each state from 1984-2014.
+
+intro to first figure
+insert code for irst figure
+insert analysis for first figure
+
+**Results and Analysis:**
+The first question we had for our data was: How does state spending on kids vary state to state and over time? Because different states have different spending budgets both within spending on children, and across all categories of state expenditures, we wanted a way to normalize what was being spent on children in different categories. Therefore, we decided to use a graph of the United States to visualize what percentage of expenditures that go towards children were spent on different categories and programs in different years. The darker the state, the higher percentage of child expenditures spent on a specific category. 
+
+To do this, we made a dataframe filtered for each year we were interested in, that dictated the totals spent in each state on children that year. Then we create a second data frame that filters the full kids dataset for that same specific year, and a spending category. We then join these two dataframes, and calculate the proportion of spending on part to whole with a simple ratio calculation. Below are our results for the variables we found most interesting.
+
+```{r}
+total_year_state_98 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "1998")
+
+prop_98<-
+kids %>%
+  filter(variable == "PK12ed") %>%
+  filter(year == "1998") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_98, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p1<- plot_usmap(data = prop_98, values = "prop", color = "red") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on K12ed in 1998")
+
+
+total_year_state_05 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "2005")
+
+prop_05<-
+kids %>%
+  filter(variable == "PK12ed") %>%
+  filter(year == "2005") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_05, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p2<- plot_usmap(data = prop_05, values = "prop", color = "red") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on K12ed in 2005")
+
+
+total_year_state_12 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "2012")
+
+prop_12<-
+kids %>%
+  filter(variable == "PK12ed") %>%
+  filter(year == "2012") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_12, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p3<-plot_usmap(data = prop_12, values = "prop", color = "red") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on K12ed in 2012")
+
+
+total_year_state_16 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "2016")
+
+prop_16<-
+kids %>%
+  filter(variable == "PK12ed") %>%
+  filter(year == "2016") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_16, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p4<-plot_usmap(data = prop_16, values = "prop", color = "red") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on K12ed in 2016")
+
+
+grid.arrange(p1,p2,p3,p4, nrow=2, ncol =2) 
+```
+Unfortunately, we were not surprised to see that generally, overtime spending on K12 education (K12ed) has decreased in priority for states. Comparing the 1998 map to the 2016 map, there is no doubt that the densities have lessened. This fits with the shrinking of national finance on public education that we have seen since 1998. Currently, when we talk about public school education, it is often riddled with pleads for improvement, but no is followed with little to no increase in resources. One surprising note here, was that there was a slight increase in density of proportional spending between 2012 and 2016. However, this is only in ~3 states. Because K12 education is by far the largest spending category in all states, we were discouraged to see that that had lost some resources over time because as the largest category it seems indicative of spending on children as a whole: a movement away from spending on our youth.
+
+The next variable we will investigate is CTC, or the Child Tax Credit. CTC is a tax benefit given to medium to low income families with dependent children. With this, qualifying families are able to pay a bit less in taxes.
+```{r}
+total_year_state_98 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "1998")
+
+prop_98<-
+kids %>%
+  filter(variable == "CTC") %>%
+  filter(year == "1998") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_98, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p1<- plot_usmap(data = prop_98, values = "prop", color = "blue") + 
+  scale_fill_continuous(
+    low = "white", high = "blue", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on CTC in 1998")
+
+
+total_year_state_05 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "2005")
+
+prop_05<-
+kids %>%
+  filter(variable == "CTC") %>%
+  filter(year == "2005") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_05, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p2<- plot_usmap(data = prop_05, values = "prop", color = "blue") + 
+  scale_fill_continuous(
+    low = "white", high = "blue", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on CTC in 2005")
+
+
+total_year_state_12 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "2012")
+
+prop_12<-
+kids %>%
+  filter(variable == "CTC") %>%
+  filter(year == "2012") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_12, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p3<-plot_usmap(data = prop_12, values = "prop", color = "blue") + 
+  scale_fill_continuous(
+    low = "white", high = "blue", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on CTC in 2012")
+
+
+total_year_state_16 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "2016")
+
+prop_16<-
+kids %>%
+  filter(variable == "CTC") %>%
+  filter(year == "2016") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_16, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p4<-plot_usmap(data = prop_16, values = "prop", color = "blue") + 
+  scale_fill_continuous(
+    low = "white", high = "blue", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on CTC in 2016")
+
+
+grid.arrange(p1,p2,p3,p4, nrow=2, ncol =2) 
+```
+Following a similar tendency to what we saw with K12 education, the proportion of spending devoted to CTC has decreased noticeably since 1998. In 1998, the average proportion going to CTC appears to be roughly ~.025, but in 2016, that same proportion appears to be more like ~.018. The general decrease in CTC spending proportion indicates to us that either fewer families are qualifying for this tax credit, or state governments are becoming more stringent about which families qualify and for how much. 
+
+We followed the same process to get insights on how SNAP spending on children has changed over time. SNAP or the Supplemental Nutrition Assistance Program, is also known as “food stamps,” in this case the total spending here has been readjusted to not include adults on SNAP, just children.
+
+```{r}
+total_year_state_98 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "1998")
+
+prop_98<-
+kids %>%
+  filter(variable == "SNAP") %>%
+  filter(year == "1998") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_98, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p1<- plot_usmap(data = prop_98, values = "prop", color = "purple") + 
+  scale_fill_continuous(
+    low = "white", high = "purple", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on SNAP in 1998")
+
+
+total_year_state_05 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "2005")
+
+prop_05<-
+kids %>%
+  filter(variable == "SNAP") %>%
+  filter(year == "2005") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_05, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p2<- plot_usmap(data = prop_05, values = "prop", color = "purple") + 
+  scale_fill_continuous(
+    low = "white", high = "purple", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on SNAP in 2005")
+
+
+total_year_state_12 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "2012")
+
+prop_12<-
+kids %>%
+  filter(variable == "SNAP") %>%
+  filter(year == "2012") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_12, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p3<-plot_usmap(data = prop_12, values = "prop", color = "purple") + 
+  scale_fill_continuous(
+    low = "white", high = "purple", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on SNAP in 2012")
+
+
+total_year_state_16 <-
+kids %>%
+  group_by(state, year) %>%
+  summarize(total = sum(inf_adj_perchild)) %>%
+  filter(year == "2016")
+
+prop_16<-
+kids %>%
+  filter(variable == "SNAP") %>%
+  filter(year == "2016") %>%
+  group_by(state, year)%>%
+  left_join(total_year_state_16, by = c("state", "year")) %>%
+  mutate(prop = inf_adj_perchild/total)
+
+p4<-plot_usmap(data = prop_16, values = "prop", color = "purple") + 
+  scale_fill_continuous(
+    low = "white", high = "purple", name = "Prop of Total Money Spent", label = scales::comma
+  ) + theme(legend.position = "right") + ggtitle("Prop of money for kids spent on SNAP in 2016")
+
+
+grid.arrange(p1,p2,p3,p4, nrow=2, ncol =2) 
+```
+We found these variable proportion comparisons particularly interesting because of their regional connection. Between 1998 and 2016 there is a definite darkening of the southern half of the United States on these maps. In other words, the proportion of state spending dedicated to SNAP for children increased. 2012 seems to have been the peak for SNAP spending on children based on the graphs above, but generally there is still an increasing trend of southern states needing to increase SNAP funding (more dramatically than non-southern states).  Specifically looking at New Mexico, we can see an increase in SNAP spending ratio from ~.015 to <~.025 in 2012. While we find the geographical connection alarming, it does fit with our understanding of the economic disparity between southern and northern states in the US, as the southern states tend to be less city based and urban. At the same time, we were glad to see that spending had increased proportionally because it indicates that something is being done to help feed children without other options. Obviously, this does not fix the problem of hunger for every child in the least, but seeing an increase in spending on child nutrition is somewhat encouraging.
+
+While there are about 20 spending categories in total to explore, we found similar map progressions in all of them except for SNAP. Generally, they all show a decreased proportion in spending on that category, with the exception of a few outliers. SNAP was the only section to overtly break this pattern. Overall, in regards to the initial question, we saw that different states choose to spend their money quite differently when in regards to expenditures on children, but generally, overtime, there has been less and less spending on child related ventures.
+
+insert  model parts
+
+**Conclusions and Further Questions**
+
