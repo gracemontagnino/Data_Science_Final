@@ -1,0 +1,89 @@
+---
+title: "model"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load-libraries}
+library(dplyr)
+library(tidyverse)
+library(broom)
+library(readxl)
+library(modelr)
+library(rsample)
+```
+
+```{r load-data}
+kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
+kids
+
+df_income <- read_csv('https://raw.githubusercontent.com/rbyirdaw/US-median-household-income/master/median-household-income-by-state-master.csv')
+df_income <-
+  df_income %>%
+  select("year", "state", "median income")
+
+kids_separated <-
+kids %>%
+  pivot_wider(
+    names_from = c("variable"),
+    names_sep = "_",
+    values_from = c("raw", "inf_adj", "inf_adj_perchild")
+  )
+
+kids %>%
+  group_by(state, variable) %>%
+  summarize(sum_raw = sum(raw),
+            sum_inf_adj = sum(inf_adj))
+
+```
+
+```{r combine-datasets}
+df_combo <- 
+  df_income %>%
+  left_join(kids_separated, by = c("year","state")) %>%
+  filter(state!= "United States") %>%
+  rename(median_income = "median income") %>%
+  filter(year >= 1997)
+
+df_combo
+```
+
+```{r split-dataset}
+split_year <- 2010
+df_train = df_combo %>% filter(year <= split_year)
+df_validate = df_combo %>% filter(year > split_year & year <= 2014)
+```
+
+```{r}
+fit_basic <-
+  df_train %>%
+  lm(formula = median_income ~ raw_PK12ed + raw_highered + raw_edservs + raw_pell + raw_HeadStartPriv + raw_TANFbasic + raw_othercashserv + raw_SNAP + raw_socsec + raw_fedEITC + raw_pubhealth + raw_HCD + raw_lib + raw_parkrec)
+
+fit_inf_adj <- 
+  df_train %>%
+  lm(formula = median_income ~ inf_adj_PK12ed + inf_adj_highered + inf_adj_edservs + inf_adj_pell + inf_adj_HeadStartPriv + inf_adj_TANFbasic + inf_adj_othercashserv + inf_adj_SNAP + inf_adj_socsec + inf_adj_fedEITC + inf_adj_pubhealth + inf_adj_HCD + inf_adj_lib + inf_adj_parkrec)
+
+fit_inf_adj_per_child <- 
+  df_train %>%
+  lm(formula = median_income ~ inf_adj_perchild_PK12ed + inf_adj_perchild_highered + inf_adj_perchild_edservs + inf_adj_perchild_pell + inf_adj_perchild_HeadStartPriv + inf_adj_perchild_TANFbasic + inf_adj_perchild_othercashserv + inf_adj_perchild_SNAP + inf_adj_perchild_socsec + inf_adj_perchild_fedEITC + inf_adj_perchild_pubhealth + inf_adj_perchild_HCD + inf_adj_perchild_lib + inf_adj_perchild_parkrec)
+
+fit_income <-
+  df_train %>%
+  lm(formula = inf_adj_perchild_PK12ed ~ median_income)
+
+rsquare(fit_basic, df_train)
+rsquare(fit_basic, df_validate)
+
+rsquare(fit_inf_adj, df_train)
+rsquare(fit_inf_adj, df_validate)
+
+rsquare(fit_inf_adj_per_child, df_train)
+rsquare(fit_inf_adj_per_child, df_validate)
+
+rsquare(fit_income, df_train)
+rsquare(fit_income, df_validate)
+```
+
