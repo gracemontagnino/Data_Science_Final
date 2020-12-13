@@ -50,7 +50,7 @@ All of these categories feel like direct reflections of the amount of money bein
 ```{r s}
 kids %>%
   group_by(state, variable) %>%
-  filter(variable == c("highered","HeadStartPriv", "PK12ed", "SNAP", "HCD", "socsec")) %>%
+  filter(variable == c("highered","HeadStartPriv", "PK12ed", "SNAP", "HCD", "socsec", "CTC", "lib", "parkrec", "pubhealth")) %>%
   summarize(spent_pc = sum(inf_adj_perchild)) %>%
   ggplot() +
   geom_col(aes(state, spent_pc, fill = variable), position = "stack") +
@@ -403,4 +403,15 @@ rsquare(fit_leaner, df_validate)
 The model packed with more variables is 67% accurate for both the training and validation data. The leaner model is 65% accurate for the training data and 63% for the validation data, which is comparable to the fuller model. Both models have high accuracy given that median income is influenced by so many other conditions that are not captured in the data.
 
 **Conclusions and Further Questions**
+* Spending and income are associated (at least for some categories)
+* Most categories decreased over time, except for SNAP
+* Social infrastructure tends to be more positively correlated whereas cash assistance programs are negatively correlated (social infrastructure = libraries, parks and rec, public health, HCD)
 
+Further questions:
+- Had trouble finding total expenditure over time. We would like to use that as a normalizer to determine if richer states are spending a proportional amount of money on kids as poorer states
+- Impact of population of kids in each state
+- Other predictors of children's success, other than median income...for ex, how many young adults are not financially dependent on their parents? 
+- Foster care system #s?
+- where is the money???
+- effect of race
+- Can we predict spending on kids through income (we did spending -> income, but can we do income -> spending?) why we did not do that.
