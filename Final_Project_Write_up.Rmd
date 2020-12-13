@@ -28,12 +28,39 @@ Our central questions were:
 
 To answer these questions, we utilized two datasets: one that details how each state has spent money on kids over time, and another that documents median household income in each state overtime. The dataset with information about spending on kids was formulated in a collaboration between a Brown University and Urban Institute Russell Sage Foundation Grant, and a Eunice Kennedy Shriver National Institute of Child Health and Human Development of the National Institutes of Health grant to isolate the gaps in class and public spending on child development. The dataset includes the year, state, raw amount spent on children (`raw`), inflation adjusted amount spent on children (`inf_adj`), and inflation adjusted amount spent per child (`inf_adj_perchild`), as well as a variable (named `variable`) indicating where the money specifically was spent. The variable options are: `addCC`, `CTC`, `edservs`, `edsubs`, `fedEITC`, `fedSSI`, `HCD`, `HeadStartPriv`, `highered`, `lib`, `Medicaid_CHIP`, `other_health`, `othercashserv`, `parkrec`, `pell`, `PK12ed`, `pubhealth`, `SNAP`, `socsec`, `stateEITC`, `TANFbasic`, `unemp`, `wcomp`. Because there are so many variables, we are not going to explain what each of those spending areas means, but they are all explained here: https://jrosen48.github.io/tidykids/articles/tidykids-codebook.html, and we will explain the variables we are noting the effects of, most of these are exactly what the names sound like! The second dataset held household median income in each state from 1984-2014.
 
-intro to first figure
+We began by studying the 
 insert code for irst figure
 insert analysis for first figure
 
 **Results and Analysis:**
-The first question we had for our data was: How does state spending on kids vary state to state and over time? Because different states have different spending budgets both within spending on children, and across all categories of state expenditures, we wanted a way to normalize what was being spent on children in different categories. Therefore, we decided to use a graph of the United States to visualize what percentage of expenditures that go towards children were spent on different categories and programs in different years. The darker the state, the higher percentage of child expenditures spent on a specific category. 
+
+## Examining State Spending Patterns 
+
+The first question we had for our data was: How does state spending on kids vary state to state and over time? 
+
+We started our analysis by first looking at the differences in which categories states allocate the most money to. We began by looking at a few categories that seemed especially relevant:
+* `highered`, or state spending on higher education
+* `HeadStartPriv`, or state spending on the Head Start program
+* `PK12ed`, or state spending on K12 education 
+* `SNAP`, or state spending on the SNAP program (food stamps)
+* `HCD`, or state spending on housing and community development
+* `socsec`, or state spending on Social Security
+All of these categories feel like direct reflections of the amount of money being invested into children.
+
+```{r s}
+kids %>%
+  group_by(state, variable) %>%
+  filter(variable == c("highered","HeadStartPriv", "PK12ed", "SNAP", "HCD", "socsec")) %>%
+  summarize(spent_pc = sum(inf_adj_perchild)) %>%
+  ggplot() +
+  geom_col(aes(state, spent_pc, fill = variable), position = "stack") +
+  theme(axis.text.x = element_text(angle = 90)) +
+  ggtitle("Money spent by each state per category")
+```
+
+Through this graph, we can see that K12 education is the highest spending category in every state, though there is a lot of variety in how much each state spends. The second largest category (of the categories we chose to focus on) varies from state to state. For most states, it is higher education, though for some states, notably Delaware, housing and community development is higher.
+
+Because different states have different spending budgets both within spending on children, and across all categories of state expenditures, we wanted a way to normalize what was being spent on children in different categories. Therefore, we decided to use a graph of the United States to visualize what percentage of expenditures that go towards children were spent on different categories and programs in different years. The darker the state, the higher percentage of child expenditures spent on a specific category. 
 
 To do this, we made a dataframe filtered for each year we were interested in, that dictated the totals spent in each state on children that year. Then we create a second data frame that filters the full kids dataset for that same specific year, and a spending category. We then join these two dataframes, and calculate the proportion of spending on part to whole with a simple ratio calculation. Below are our results for the variables we found most interesting.
 
