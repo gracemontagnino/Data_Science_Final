@@ -58,7 +58,7 @@ kids %>%
   ggtitle("Money spent by each state per category")
 ```
 
-Through this graph, we can see that K12 education is the highest spending category in every state, though there is a lot of variety in how much each state spends. The second largest category (of the categories we chose to focus on) varies from state to state. For most states, it is higher education, though for some states, notably Delaware, housing and community development is higher.
+Through this graph, we can see that K12 education is the highest spending category in every state, though there is a lot of variety in how much each state spends. The second largest category (of the categories we chose to focus on) varies from state to state. For most states, it is higher education, though for some states, notably Delaware, housing and community development is higher. For all the states, SNAP and social security have low amounts of spending compared to the other categories.
 
 Because different states have different spending budgets both within spending on children, and across all categories of state expenditures, we wanted a way to normalize what was being spent on children in different categories. Therefore, we decided to use a graph of the United States to visualize what percentage of expenditures that go towards children were spent on different categories and programs in different years. The darker the state, the higher percentage of child expenditures spent on a specific category. 
 
