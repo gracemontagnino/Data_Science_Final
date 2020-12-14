@@ -7,6 +7,8 @@ output:
     toc: true
 ---
 
+# Setup 
+
 ```{r load-libraries}
 library(dplyr)
 library(tidyverse)
@@ -25,7 +27,8 @@ kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidyt
 df_income <- read_csv('https://raw.githubusercontent.com/rbyirdaw/US-median-household-income/master/median-household-income-by-state-master.csv')
 ```
 
-**General Background:**
+# General Background
+
 Our central questions were:
 * How does state spending on kids vary state to state and over time?
 * Does government spending in money relate to the economic wellbeing of these states, measured in median income?
@@ -34,7 +37,7 @@ We were interested in studying these questions as investment in children is an i
 
 To answer these questions, we utilized two datasets: one that details how each state has spent money on kids over time, and another that documents median household income in each state overtime. The dataset with information about spending on kids was formulated in a collaboration between Brown University and Urban Institute Russell Sage Foundation Grant, and a Eunice Kennedy Shriver National Institute of Child Health and Human Development and the National Institutes of Health grant, to isolate the gaps in class and public spending on child development. The dataset includes the year, state, raw amount spent on children (`raw`), inflation adjusted amount spent on children (`inf_adj`), and inflation adjusted amount spent per child (`inf_adj_perchild`), as well as a variable (named `variable`) indicating where the money specifically was spent. The variable options are: `addCC`, `CTC`, `edservs`, `edsubs`, `fedEITC`, `fedSSI`, `HCD`, `HeadStartPriv`, `highered`, `lib`, `Medicaid_CHIP`, `other_health`, `othercashserv`, `parkrec`, `pell`, `PK12ed`, `pubhealth`, `SNAP`, `socsec`, `stateEITC`, `TANFbasic`, `unemp`, `wcomp`. Because there are so many variables, we are not going to explain what each of those spending areas means, but they are all explained here: https://jrosen48.github.io/tidykids/articles/tidykids-codebook.html, and we will explain the variables we are noting the effects of, most of these are exactly what the names sound like! The second dataset held household median income in each state from 1984-2014.
 
-**Results and Analysis:**
+# Results and Analysis
 
 ## Examining State Spending Patterns 
 
@@ -431,7 +434,7 @@ rsquare(fit_leaner, df_validate)
 
 The model packed with more variables is 67% accurate for both the training and validation data. The leaner model is 65% accurate for the training data and 63% for the validation data, which is comparable to the fuller model. Both models have high accuracy given that median income is influenced by so many other conditions that are not captured in the data.
 
-**Conclusions and Further Questions**
+# Conclusions and Further Questions
 
 In conclusion, in most categories the spending proportions have decreased over time, with the exception of SNAP, which has seen a dramatic increase in spending in the southern half of the US. From our model, we were able to conclude that spending and income are associated, at least for some categories -- such that it is possible with some accuracy to predict the median income of a state given their spending on children statistics. Generally, social infrastructure related spending categories (libraries, parks and rec, public health, HCD) tend to be more positively correlated with a state's median income, whereas cash assistance programs (CTC, Pell grants, EITC) are negatively correlated, or no correlation is found. These conclusions roughly match our hypotheses -- there has been a general decrease in spending on children in states, and there is some connection between state spending on children and median income.
 
