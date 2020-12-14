@@ -93,10 +93,12 @@ Setup
 General Background
 ==================
 
-Our central questions were: \* How does state spending on kids vary
-state to state and over time? \* Does government spending in money
-relate to the economic wellbeing of these states, measured in median
-income?
+Our central questions were:
+
+-   How does state spending on kids vary state to state and over time?
+
+-   Does government spending in money relate to the economic wellbeing
+    of these states, measured in median income?
 
 We were interested in studying these questions as investment in children
 is an investment in the future of our society. Recently, government
@@ -147,16 +149,30 @@ kids vary state to state and over time?
 
 We started our analysis by first looking at the differences in which
 categories states allocate the most money to. We began by looking at a
-few categories that seemed especially relevant: \* `highered`, or state
-spending on higher education \* `HeadStartPriv`, or state spending on
-the Head Start program \* `PK12ed`, or state spending on K12 education
-\* `SNAP`, or state spending on the SNAP program (food stamps) \* `HCD`,
-or state spending on housing and community development \* `socsec`, or
-state spending on Social Security \* `CTC`, or state spending on Child
-Tax Credit \* `lib`, or state spending on libraries \* `parkrec`, or
-state spending on parks and recreation \* `pubhealth`, or state spending
-on public health All of these categories feel like direct reflections of
-the amount of money being invested into children.
+few categories that seemed especially relevant:
+
+-   `highered`, or state spending on higher education
+
+-   `HeadStartPriv`, or state spending on the Head Start program
+
+-   `PK12ed`, or state spending on K12 education
+
+-   `SNAP`, or state spending on the SNAP program (food stamps)
+
+-   `HCD`, or state spending on housing and community development
+
+-   `socsec`, or state spending on Social Security
+
+-   `CTC`, or state spending on Child Tax Credit
+
+-   `lib`, or state spending on libraries
+
+-   `parkrec`, or state spending on parks and recreation
+
+-   `pubhealth`, or state spending on public health
+
+All of these categories feel like direct reflections of the amount of
+money being invested into children.
 
     kids %>%
       group_by(state, variable) %>%
@@ -624,19 +640,6 @@ that these variables are predictors of median income. To confirm this,
 we constructed a leaner version of this model which excluded variables
 that might have no correlation to median income, which is shown below.
 
-The categories that we excluded are: \* `ed_servs` - public spending on
-education special services \* `TANFbasic` - public spending on TANF
-(Temporary Assistance for Needy Families) cash assistance payments \*
-`SNAP` - public spending on SNAP (Supplemental Nutrition Assistance
-Program) benefit payments that go to children \* `socsec` - public
-spending on Social Security payments that go to children
-
-Some of these categories may not correlate to median income because the
-median income is determined by the household wealth, and children don’t
-contribute to the household wealth (because they’re not working); so,
-for example, payments directly going to children may not directly
-correlate as much to median income.
-
     # Create leaner model
     fit_leaner <- 
       df_train %>%
@@ -660,15 +663,21 @@ correlate as much to median income.
     ## 10 inf_adj_perchild_l…  17270.      6022.     2.87  4.26e-  3    5446.    29094.
     ## 11 inf_adj_perchild_p…  11720.      1615.     7.26  1.08e- 12    8549.    14891.
 
-In our leaner model, we can make the following observations: \* Spending
-on K12 education is strongly positively correlated with median income.
-\* We cannot confidently determine if spending on higher education is
-correlated with median income as the confidence interval for the
-confidence interval for the confidence interval includes 0. \* Spending
-on Pell grants, Head Start, other cash assistance services, and EITC is
-negatively correlated with median income. \* Spending on public health,
-HCD (housing and community development), libraries, and parks and
-recreation is positively correlated with median income.
+In our leaner model, we can make the following observations:
+
+-   Spending on K12 education is strongly positively correlated with
+    median income.
+
+-   We cannot confidently determine if spending on higher education is
+    correlated with median income as the confidence interval for the
+    confidence interval for the confidence interval includes 0.
+
+-   Spending on Pell grants, Head Start, other cash assistance services,
+    and EITC is negatively correlated with median income.
+
+-   Spending on public health, HCD (housing and community development),
+    libraries, and parks and recreation is positively correlated with
+    median income.
 
 Interestingly, we observe that the large majority of cash assistance
 programs or other such social services are either not confidently
@@ -732,24 +741,33 @@ hypotheses – there has been a general decrease in spending on children
 in states, and there is some connection between state spending on
 children and median income.
 
-We have a number of further questions we would like to explore: \* We
-wonder if it is possible to predict spending on kids based on the median
-income, as currently our model predicts income based off of spending on
-kids. We didn’t attempt to do this because we reasoned that spending on
-kids is dependent on other data about how governments are choosing to
-allocate all of their funds. \* Relatedly, we’re curious where the money
-that is not going to kids is being allocated instead. \* We had trouble
-finding total expenditures over time, and would’ve liked to use that as
-a normalizer to determine if richer states are spending a proportional
-amount of money on children as poorer states. \* We also had a number of
-questions about how demographic characteristic of states relate to these
-trends. For example, what is the effect of the population of children in
-each state on state spending? How do race and gender distributions of
-kids, and of the state in general, affect state spending on kids? Is
-there a connection between the foster care population and state spending
-on kids? \* Finally, we were curious what trends we would be observe if
-we used other metrics of children’s success beyond the median income in
-each state. For example, we could’ve used the number of young adults
-participating in either education, employment, or training, or the child
-poverty rate, or birthweight (all factors listed earlier in this
-report).
+We have a number of further questions we would like to explore:
+
+-   We wonder if it is possible to predict spending on kids based on the
+    median income, as currently our model predicts income based off of
+    spending on kids. We didn’t attempt to do this because we reasoned
+    that spending on kids is dependent on other data about how
+    governments are choosing to allocate all of their funds.
+
+-   Relatedly, we’re curious where the money that is not going to kids
+    is being allocated instead.
+
+-   We had trouble finding total expenditures over time, and would’ve
+    liked to use that as a normalizer to determine if richer states are
+    spending a proportional amount of money on children as poorer
+    states.
+
+-   We also had a number of questions about how demographic
+    characteristic of states relate to these trends. For example, what
+    is the effect of the population of children in each state on state
+    spending? How do race and gender distributions of kids, and of the
+    state in general, affect state spending on kids? Is there a
+    connection between the foster care population and state spending on
+    kids?
+
+-   Finally, we were curious what trends we would be observe if we used
+    other metrics of children’s success beyond the median income in each
+    state. For example, we could’ve used the number of young adults
+    participating in either education, employment, or training, or the
+    child poverty rate, or birthweight (all factors listed earlier in
+    this report).

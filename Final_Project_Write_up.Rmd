@@ -30,8 +30,10 @@ df_income <- read_csv('https://raw.githubusercontent.com/rbyirdaw/US-median-hous
 # General Background
 
 Our central questions were:
-* How does state spending on kids vary state to state and over time?
-* Does government spending in money relate to the economic wellbeing of these states, measured in median income?
+
+- How does state spending on kids vary state to state and over time?
+
+- Does government spending in money relate to the economic wellbeing of these states, measured in median income?
 
 We were interested in studying these questions as investment in children is an investment in the future of our society. Recently, government spending on children (especially on the federal level) has been [decreasing a lot](https://www.urban.org/features/shortchanging-future-generations). This lack of investment in children is [reflected in](https://www.urban.org/research/publication/kids-share-2019-report-federal-expenditures-children-through-2018-and-future-projections/view/full_report) the United States' higher povery rates, lower birth weights, preschoole enrollment rates, percentages of 15-19 year olds participating in education, employment, or training, and composite measure of child well-being, compared to other countries. As federal spending decreases, states need to scramble to try to figure out how they can invest all the necessary funds in children to support society's future as a whole.
 
@@ -44,16 +46,27 @@ To answer these questions, we utilized two datasets: one that details how each s
 The first question we had for our data was: How does state spending on kids vary state to state and over time? 
 
 We started our analysis by first looking at the differences in which categories states allocate the most money to. We began by looking at a few categories that seemed especially relevant:
-* `highered`, or state spending on higher education
-* `HeadStartPriv`, or state spending on the Head Start program
-* `PK12ed`, or state spending on K12 education 
-* `SNAP`, or state spending on the SNAP program (food stamps)
-* `HCD`, or state spending on housing and community development
-* `socsec`, or state spending on Social Security
-* `CTC`, or state spending on Child Tax Credit
-* `lib`, or state spending on libraries
-* `parkrec`, or state spending on parks and recreation 
-* `pubhealth`, or state spending on public health
+
+- `highered`, or state spending on higher education
+
+- `HeadStartPriv`, or state spending on the Head Start program
+
+- `PK12ed`, or state spending on K12 education 
+
+- `SNAP`, or state spending on the SNAP program (food stamps)
+
+- `HCD`, or state spending on housing and community development
+
+- `socsec`, or state spending on Social Security
+
+- `CTC`, or state spending on Child Tax Credit
+
+- `lib`, or state spending on libraries
+
+- `parkrec`, or state spending on parks and recreation 
+
+- `pubhealth`, or state spending on public health
+
 All of these categories feel like direct reflections of the amount of money being invested into children.
 
 ```{r state-category-spending}
@@ -397,14 +410,6 @@ fit_inf_adj_per_child %>% tidy(conf.int = TRUE)
 
 Initially, we developed a linear model to predict median income based off the inflation-adjusted spending per child in all the  categories (excluding only those where many states did not allocate any money). This model has a few possibly redundant variables, though, which we could tell by looking at the confidence intervals for the coefficient estimates. Some of the variables, like `ed_servs`, `TANFbasic`, `SNAP`, and  `socsec`, have confidence intervals that include 0 as a possible value for the coefficient. This means that we cannot confidently say that these variables are predictors of median income. To confirm this, we constructed a leaner version of this model which excluded variables that might have no correlation to median income, which is shown below.
 
-The categories that we excluded are:
-* `ed_servs` - public spending on education special services
-* `TANFbasic` - public spending on TANF (Temporary Assistance for Needy Families) cash assistance payments
-* `SNAP` - public spending on SNAP (Supplemental Nutrition Assistance Program) benefit payments that go to children
-* `socsec` - public spending on Social Security payments that go to children
-
-Some of these categories may not correlate to median income because the median income is determined by the household wealth, and children don't contribute to the household wealth (because they're not working); so, for example, payments directly going to children may not directly correlate as much to median income.
-
 ```{r leaner-model}
 # Create leaner model
 fit_leaner <- 
@@ -416,10 +421,14 @@ fit_leaner %>% tidy(conf.int = TRUE)
 ```
 
 In our leaner model, we can make the following observations: 
-* Spending on K12 education is strongly positively correlated with median income.
-* We cannot confidently determine if spending on higher education is correlated with median income as the confidence interval for the confidence interval for the confidence interval includes 0.
-* Spending on Pell grants, Head Start, other cash assistance services, and EITC is negatively correlated with median income.
-* Spending on public health, HCD (housing and community development), libraries, and parks and recreation is positively correlated with median income.
+
+- Spending on K12 education is strongly positively correlated with median income.
+
+- We cannot confidently determine if spending on higher education is correlated with median income as the confidence interval for the confidence interval for the confidence interval includes 0.
+
+- Spending on Pell grants, Head Start, other cash assistance services, and EITC is negatively correlated with median income.
+
+- Spending on public health, HCD (housing and community development), libraries, and parks and recreation is positively correlated with median income.
 
 Interestingly, we observe that the large majority of cash assistance programs or other such social services are either not confidently correlated with median income or negatively correlated. There are two hypotheses that could explain these trends. First, we hypothesize that more affluent communities have greater resources to invest in infrastructural resources and less demand for cash assistance programs, whereas poorer communities have fewer resources to invest in infrastructure and more of their community members need cash assistance. A second hypothesis could be that more affluent communities are more affluent because they have invested so much in social infrastructure, whereas poorer communities are poorer because they have not been able to invest as much in social infrastructure. Because we didn't run a controlled experiment, we cannot conclude the directionality of the association and can only say that median income and spending in these categories are clearly associated.
 
@@ -442,8 +451,13 @@ The model packed with more variables is 67% accurate for both the training and v
 In conclusion, in most categories the spending proportions have decreased over time, with the exception of SNAP, which has seen a dramatic increase in spending in the southern half of the US. From our model, we were able to conclude that spending and income are associated, at least for some categories -- such that it is possible with some accuracy to predict the median income of a state given their spending on children statistics. Generally, social infrastructure related spending categories (libraries, parks and rec, public health, HCD) tend to be more positively correlated with a state's median income, whereas cash assistance programs (CTC, Pell grants, EITC) are negatively correlated, or no correlation is found. These conclusions roughly match our hypotheses -- there has been a general decrease in spending on children in states, and there is some connection between state spending on children and median income.
 
 We have a number of further questions we would like to explore:
-* We wonder if it is possible to predict spending on kids based on the median income, as currently our model predicts income based off of spending on kids. We didn't attempt to do this because we reasoned that spending on kids is dependent on other data about how governments are choosing to allocate all of their funds.
-* Relatedly, we're curious where the money that is not going to kids is being allocated instead.
-* We had trouble finding total expenditures over time, and would've liked to use that as a normalizer to determine if richer states are spending a proportional amount of money on children as poorer states.
-* We also had a number of questions about how demographic characteristic of states relate to these trends. For example, what is the effect of the population of children in each state on state spending? How do race and gender distributions of kids, and of the state in general, affect state spending on kids? Is there a connection between the foster care population and state spending on kids?
-* Finally, we were curious what trends we would be observe if we used other metrics of children's success beyond the median income in each state. For example, we could've used the number of young adults participating in either education, employment, or training, or the child poverty rate, or birthweight (all factors listed earlier in this report).
+
+- We wonder if it is possible to predict spending on kids based on the median income, as currently our model predicts income based off of spending on kids. We didn't attempt to do this because we reasoned that spending on kids is dependent on other data about how governments are choosing to allocate all of their funds.
+
+- Relatedly, we're curious where the money that is not going to kids is being allocated instead.
+
+- We had trouble finding total expenditures over time, and would've liked to use that as a normalizer to determine if richer states are spending a proportional amount of money on children as poorer states.
+
+- We also had a number of questions about how demographic characteristic of states relate to these trends. For example, what is the effect of the population of children in each state on state spending? How do race and gender distributions of kids, and of the state in general, affect state spending on kids? Is there a connection between the foster care population and state spending on kids?
+
+- Finally, we were curious what trends we would be observe if we used other metrics of children's success beyond the median income in each state. For example, we could've used the number of young adults participating in either education, employment, or training, or the child poverty rate, or birthweight (all factors listed earlier in this report).
