@@ -327,6 +327,7 @@ variables we found most interesting.
     grid.arrange(p1,p2,p3,p4, nrow=2, ncol =2) 
 
 ![](Final_Project_Write_up_files/figure-gfm/k12-year-comps-1.png)<!-- -->
+
 Unfortunately, we were not surprised to see that generally, over time
 spending on K12 education (K12ed) has decreased in priority for states.
 Comparing the 1998 map to the 2016 map, there is no doubt that the
@@ -427,6 +428,7 @@ less in taxes.
     grid.arrange(p1,p2,p3,p4, nrow=2, ncol =2) 
 
 ![](Final_Project_Write_up_files/figure-gfm/ctc-year-comps-1.png)<!-- -->
+
 Following a similar tendency to what we saw with K12 education, the
 proportion of spending devoted to CTC has decreased noticeably since
 1998. In 1998, the average proportion going to CTC appears to be roughly
@@ -522,6 +524,7 @@ just children.
     grid.arrange(p1,p2,p3,p4, nrow=2, ncol =2) 
 
 ![](Final_Project_Write_up_files/figure-gfm/snap-year-comps-1.png)<!-- -->
+
 We found these variable proportion comparisons particularly interesting
 because of their regional connection. Between 1998 and 2016 there is a
 definite increase in spending proportions in the southern half of the

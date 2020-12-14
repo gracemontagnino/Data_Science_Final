@@ -183,6 +183,7 @@ p4<-plot_usmap(data = prop_16, values = "prop", color = "red") +
 # Show plots for K12 spending across the 4 years
 grid.arrange(p1,p2,p3,p4, nrow=2, ncol =2) 
 ```
+
 Unfortunately, we were not surprised to see that generally, over time spending on K12 education (K12ed) has decreased in priority for states. Comparing the 1998 map to the 2016 map, there is no doubt that the densities have lessened. This fits with the shrinking amount of national finance spent on public education that we have seen since 1998. Currently, when we talk about public school education, it is often riddled with pleads for improvement, but no is followed with little to no increase in resources. One surprising note here, was that there was a slight increase in density of proportional spending between 2012 and 2016. However, this is only in ~3 states. Because K12 education is by far the largest spending category in all states, we were discouraged to see that that had lost some resources over time because as the largest category it seems indicative of spending on children as a whole: a movement away from spending on our youth.
 
 The next variable we will investigate is CTC, or the Child Tax Credit. CTC is a tax benefit given to medium to low income families with dependent children. With this, qualifying families are able to pay a bit less in taxes.
@@ -267,6 +268,7 @@ p4<-plot_usmap(data = prop_16, values = "prop", color = "blue") +
 # Plot CTC graphs over 4 years
 grid.arrange(p1,p2,p3,p4, nrow=2, ncol =2) 
 ```
+
 Following a similar tendency to what we saw with K12 education, the proportion of spending devoted to CTC has decreased noticeably since 1998. In 1998, the average proportion going to CTC appears to be roughly ~.025, but in 2016, that same proportion appears to be more like ~.018. The general decrease in CTC spending proportion indicates to us that either fewer families are qualifying for this tax credit, or state governments are becoming more stringent about which families qualify and for how much. 
 
 We followed the same process to get insights on how SNAP spending on children has changed over time. SNAP or the Supplemental Nutrition Assistance Program, is also known as “food stamps,” in this case the total spending here has been readjusted to not include adults on SNAP, just children.
@@ -352,6 +354,7 @@ p4<-plot_usmap(data = prop_16, values = "prop", color = "purple") +
 # Plot SNAP graphs for all four years
 grid.arrange(p1,p2,p3,p4, nrow=2, ncol =2) 
 ```
+
 We found these variable proportion comparisons particularly interesting because of their regional connection. Between 1998 and 2016 there is a definite increase in spending proportions in the southern half of the United States. In other words, the proportion of state spending dedicated to SNAP for children increased. 2012 seems to have been the peak for SNAP spending on children based on the graphs above, but generally there is still an increasing trend of southern states needing to increase SNAP funding (more dramatically than non-southern states).  Specifically looking at New Mexico, we can see an increase in SNAP spending ratio from ~.015 to <~.025 in 2012. While we find the geographical connection alarming, it does fit with our understanding of the economic disparity between southern and northern states in the US, as the southern states tend to be less city based and urban. At the same time, we were glad to see that spending had increased proportionally because it indicates that something is being done to help feed children without other options. Obviously, this does not fix the problem of hunger for every child in the least, but seeing an increase in spending on child nutrition is somewhat encouraging.
 
 While there are about 20 spending categories in total to explore, we found similar map progressions in all of them except for SNAP. Generally, they all show a decreased proportion in spending on that category, with the exception of a few outliers. SNAP was the only section to overtly break this pattern. Overall, in regards to the initial question, we saw that different states choose to spend their money quite differently when in regards to expenditures on children, but generally, overtime, there has been less and less spending on child related ventures.
